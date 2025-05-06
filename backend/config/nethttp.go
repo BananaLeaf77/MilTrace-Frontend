@@ -26,12 +26,12 @@ func NetHTTPInternalServerError(w http.ResponseWriter, message string, err strin
 	})
 }
 
-func NetHTTPStatusOK(w http.ResponseWriter, message string, data *any) {
+func NetHTTPStatusOK(w http.ResponseWriter, message string, data interface{}) {
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]any{
-		"success": "true",
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": message,
-		"status":  200,
+		"status":  http.StatusOK,
 		"data":    data,
 	})
 }

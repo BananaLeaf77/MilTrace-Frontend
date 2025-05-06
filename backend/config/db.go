@@ -25,7 +25,7 @@ func BootDB() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	db.AutoMigrate(&domain.Device{}, &domain.User{})
+	db.AutoMigrate(&domain.Device{}, &domain.Location{}, &domain.User{})
 
 	fmt.Println("DB initialized")
 	return db, nil
