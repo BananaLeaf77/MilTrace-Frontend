@@ -1,7 +1,9 @@
 package delivery
 
 import (
+	"MilTrace/config"
 	"MilTrace/domain"
+	"encoding/json"
 	"net/http"
 )
 
@@ -9,7 +11,7 @@ type deviceHandler struct {
 	deviceService domain.DeviceService
 }
 
-func NewUserAuthHandler(netHttp *http.ServeMux, deviceService domain.DeviceService) {
+func NewDeviceHandler(netHttp *http.ServeMux, deviceService domain.DeviceService) {
 	deviceHandler := &deviceHandler{
 		deviceService: deviceService,
 	}
@@ -23,6 +25,38 @@ func NewUserAuthHandler(netHttp *http.ServeMux, deviceService domain.DeviceServi
 }
 
 func (h *deviceHandler) RegisterNewDevice(w http.ResponseWriter, r *http.Request) {
-	// Handle device registration logic here
+	// Decode request body
+	var deviceDataPayload domain.Device
+	err := json.NewDecoder(r.Body).Decode(&deviceDataPayload)
+	if err != nil {
+		config.NetHTTPBadRequest(w, "Invalid request payload", err.Error())
+		return
+	}
+
+	// Register device
+	err = h.deviceService.RegisterNewDevice(&deviceDataPayload, r.Context())
+	if err != nil {
+		config.NetHTTPInternalServerError(w, "Failed to register device", err.Error())
+		return
+	}
+
+	// Respond with success
+	config.NetHTTPStatusCreated(w, "Device registered successfully")
+	return
+}
+
+func (h *deviceHandler) UpdateDevice(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *deviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *deviceHandler) GetAllDeviceData(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *deviceHandler) GetDevice(w http.ResponseWriter, r *http.Request) {
 
 }

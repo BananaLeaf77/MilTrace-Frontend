@@ -32,7 +32,7 @@ func StartHTTP() {
 
 	// NetHTTP Router
 	netHttp := http.NewServeMux()
-	delivery.NewUserAuthHandler(netHttp, tracerService)
+	delivery.NewDeviceHandler(netHttp, tracerService)
 	log.Println("Starting HTTP server on :8080")
 
 	err = http.ListenAndServe(":8080", netHttp)
