@@ -18,30 +18,46 @@ func NewDeviceRepository(db *gorm.DB) domain.DeviceRepository {
 	}
 }
 
-func (r *deviceRepository) RegisterNewDevice(deviceData *domain.Device, ctx context.Context) error {
-	return r.db.WithContext(ctx).Create(deviceData).Error
+func (r *deviceRepository) RegisterNewDevice(ctx context.Context, device *domain.Device) error {
+	if err := r.db.WithContext(ctx).Create(device).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func (r *deviceRepository) UpdateDevice(deviceData *domain.Device, ctx context.Context) error {
-	return r.db.WithContext(ctx).Save(deviceData).Error
+func (r *deviceRepository) UpdateDevice(ctx context.Context, device *domain.Device) error {
+	if err := r.db.WithContext(ctx).Save(device).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func (r *deviceRepository) DeleteDevice(deviceUUID *uuid.UUID, ctx context.Context) error {
-	return r.db.WithContext(ctx).Where("id = ?", deviceUUID).Delete(&domain.Device{}).Error
+func (r *deviceRepository) DeleteDevice(ctx context.Context, deviceID *uuid.UUID) error {
+	if err := r.db.WithContext(ctx).Delete(&domain.Device{}, deviceID).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *deviceRepository) GetAllDeviceData(ctx context.Context) (*[]domain.Device, error) {
 	var devices []domain.Device
-	err := r.db.WithContext(ctx).Find(&devices).Error
-	return &devices, err
+	if err := r.db.WithContext(ctx).Find(&devices).Error; err != nil {
+		return nil, err
+	}
+	return &devices, nil
 }
 
-func (r *deviceRepository) GetDevice(deviceUUID *uuid.UUID, ctx context.Context) (*domain.Device, error) {
+func (r *deviceRepository) GetDevice(ctx context.Context, deviceID *uuid.UUID) (*domain.Device, error) {
 	var device domain.Device
-	err := r.db.Where("id = ?", deviceUUID).First(&device).Error
-	return &device, err
+	if err := r.db.WithContext(ctx).First(&device, "device_id = ?", deviceID).Error; err != nil {
+		return nil, err
+	}
+	return &device, nil
 }
 
-func (r *deviceRepository) ReceiveLocationData(deviceUUID *uuid.UUID, locationData *domain.Location, ctx context.Context) error {
-	return r.db.WithContext(ctx).Model(&domain.Device{}).Where("id = ?", deviceUUID).Association("Location").Append(locationData)
+func (r *deviceRepository) ReceiveLocationData(ctx context.Context, deviceID *uuid.UUID, locationData *domain.Location) error {
+	if err := r.db.WithContext(ctx).Model(&domain.Device{}).Where("device_id = ?", deviceID).Association("LocationData").Append(locationData); err != nil {
+		return err
+	}
+	return nil
 }

@@ -17,8 +17,8 @@ func NewDeviceService(repo domain.DeviceRepository) domain.DeviceService {
 	}
 }
 
-func (r *deviceServiceHandler) RegisterNewDevice(deviceData *domain.Device, ctx context.Context) error {
-	err := r.repo.RegisterNewDevice(deviceData, ctx)
+func (s *deviceServiceHandler) RegisterNewDevice(ctx context.Context, deviceData *domain.Device) error {
+	err := s.repo.RegisterNewDevice(ctx, deviceData)
 	if err != nil {
 		return err
 	}
@@ -26,8 +26,8 @@ func (r *deviceServiceHandler) RegisterNewDevice(deviceData *domain.Device, ctx 
 	return nil
 }
 
-func (r *deviceServiceHandler) UpdateDevice(deviceData *domain.Device, ctx context.Context) error {
-	err := r.repo.UpdateDevice(deviceData, ctx)
+func (s *deviceServiceHandler) UpdateDevice(ctx context.Context, deviceData *domain.Device) error {
+	err := s.repo.UpdateDevice(ctx, deviceData)
 	if err != nil {
 		return err
 	}
@@ -35,8 +35,8 @@ func (r *deviceServiceHandler) UpdateDevice(deviceData *domain.Device, ctx conte
 	return nil
 }
 
-func (r *deviceServiceHandler) DeleteDevice(deviceUUID *uuid.UUID, ctx context.Context) error {
-	err := r.repo.DeleteDevice(deviceUUID, ctx)
+func (s *deviceServiceHandler) DeleteDevice(ctx context.Context, deviceUUID *uuid.UUID) error {
+	err := s.repo.DeleteDevice(ctx, deviceUUID)
 	if err != nil {
 		return err
 	}
@@ -44,8 +44,8 @@ func (r *deviceServiceHandler) DeleteDevice(deviceUUID *uuid.UUID, ctx context.C
 	return nil
 }
 
-func (r *deviceServiceHandler) GetAllDeviceData(ctx context.Context) (*[]domain.Device, error) {
-	devices, err := r.repo.GetAllDeviceData(ctx)
+func (s *deviceServiceHandler) GetAllDeviceData(ctx context.Context) (*[]domain.Device, error) {
+	devices, err := s.repo.GetAllDeviceData(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +53,8 @@ func (r *deviceServiceHandler) GetAllDeviceData(ctx context.Context) (*[]domain.
 	return devices, nil
 }
 
-func (r *deviceServiceHandler) GetDevice(deviceUUID *uuid.UUID, ctx context.Context) (*domain.Device, error) {
-	device, err := r.repo.GetDevice(deviceUUID, ctx)
+func (s *deviceServiceHandler) GetDevice(ctx context.Context, deviceUUID *uuid.UUID) (*domain.Device, error) {
+	device, err := s.repo.GetDevice(ctx, deviceUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +62,8 @@ func (r *deviceServiceHandler) GetDevice(deviceUUID *uuid.UUID, ctx context.Cont
 	return device, nil
 }
 
-func (r *deviceServiceHandler) ReceiveLocationData(deviceUUID *uuid.UUID, locationData *domain.Location, ctx context.Context) error {
-	err := r.repo.ReceiveLocationData(deviceUUID, locationData, ctx)
+func (s *deviceServiceHandler) ReceiveLocationData(ctx context.Context, deviceUUID *uuid.UUID, locationData *domain.Location) error {
+	err := s.repo.ReceiveLocationData(ctx, deviceUUID, locationData)
 	if err != nil {
 		return err
 	}

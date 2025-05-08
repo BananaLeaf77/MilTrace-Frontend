@@ -7,8 +7,7 @@ import (
 	"MilTrace/services"
 	"log"
 
-	"net/http"
-
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -31,12 +30,13 @@ func StartHTTP() {
 	tracerService := services.NewDeviceService(tracerRepo)
 
 	// NetHTTP Router
-	netHttp := http.NewServeMux()
-	delivery.NewDeviceHandler(netHttp, tracerService)
+	gin.SetMode(gin.ReleaseMode)
+	engine := gin.New()
+	engine.SetTrustedProxies(nil)
+	delivery.NewDeviceHandler(engine, tracerService)
 	log.Println("Starting HTTP server on :8080 🌐")
-
-	err = http.ListenAndServe(":8080", netHttp)
-	if err != nil {
+	log.Println("Endpoint: http://localhost:8080/ping")
+	if err := engine.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start HTTP server ⛔, err: %s", err)
 	}
 
