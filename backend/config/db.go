@@ -3,6 +3,7 @@ package config
 import (
 	"MilTrace/domain"
 	"fmt"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -25,8 +26,9 @@ func BootDB() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
+	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
 	db.AutoMigrate(&domain.Device{}, &domain.Location{}, &domain.User{})
 
-	fmt.Println("DB initialized")
+	log.Println("Database Initialized ✅")
 	return db, nil
 }

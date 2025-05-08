@@ -36,8 +36,12 @@ func (r *deviceRepository) GetAllDeviceData(ctx context.Context) (*[]domain.Devi
 	return &devices, err
 }
 
-func (r *deviceRepository) GetDevice(deviceUUID *uuid.UUID) (*domain.Device, error) {
+func (r *deviceRepository) GetDevice(deviceUUID *uuid.UUID, ctx context.Context) (*domain.Device, error) {
 	var device domain.Device
 	err := r.db.Where("id = ?", deviceUUID).First(&device).Error
 	return &device, err
+}
+
+func (r *deviceRepository) ReceiveLocationData(deviceUUID *uuid.UUID, locationData *domain.Location, ctx context.Context) error {
+	return r.db.WithContext(ctx).Model(&domain.Device{}).Where("id = ?", deviceUUID).Association("Location").Append(locationData)
 }
