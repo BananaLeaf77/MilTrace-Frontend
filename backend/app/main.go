@@ -6,7 +6,9 @@ import (
 	"MilTrace/repository"
 	"MilTrace/services"
 	"log"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -32,6 +34,15 @@ func StartHTTP() {
 	// NetHTTP Router
 	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
+	engine.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // Your React app's URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	engine.SetTrustedProxies(nil)
 	delivery.NewDeviceHandler(engine, tracerService)
 	log.Println("Starting HTTP server on :8080 🌐")

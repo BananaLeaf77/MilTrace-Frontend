@@ -1,1 +1,16 @@
 .env
+
+
+# Frontend ignores
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/dist/
+frontend/build/
+frontend/.DS_Store
+frontend/coverage/
+frontend/.vscode/
+frontend/*.log
