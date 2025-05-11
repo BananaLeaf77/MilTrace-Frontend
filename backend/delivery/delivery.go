@@ -5,7 +5,6 @@ import (
 	"MilTrace/domain"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type deviceHandler struct {
@@ -22,7 +21,7 @@ func NewDeviceHandler(router *gin.Engine, deviceService domain.DeviceService) {
 	})
 	router.POST("/device", deviceHandler.RegisterNewDevice)
 	router.PUT("/device/update", deviceHandler.UpdateDevice)
-	router.DELETE("/device/delete", deviceHandler.DeleteDevice)
+	router.DELETE("/device/delete/:deviceid", deviceHandler.DeleteDevice)
 	router.GET("/device/all", deviceHandler.GetAllDeviceData)
 	router.GET("/device/get/:deviceid", deviceHandler.GetDevice)
 	router.PUT("/device/receiveLocation", deviceHandler.ReceiveLocationData)
@@ -59,13 +58,13 @@ func (h *deviceHandler) UpdateDevice(c *gin.Context) {
 }
 
 func (h *deviceHandler) DeleteDevice(c *gin.Context) {
-	var deviceID uuid.UUID
-	if err := c.ShouldBindJSON(&deviceID); err != nil {
-		config.GinBadRequest(c, "Invalid input", err)
+	deviceID := c.Param("deviceid")
+	if deviceID == "" {
+		config.GinBadRequest(c, "Device ID is required", nil)
 		return
 	}
 
-	if err := h.deviceService.DeleteDevice(c, &deviceID); err != nil {
+	if err := h.deviceService.DeleteDevice(c, deviceID); err != nil {
 		config.GinInternalServerError(c, "Failed to delete device", err)
 		return
 	}
@@ -90,14 +89,7 @@ func (h *deviceHandler) GetDevice(c *gin.Context) {
 		return
 	}
 
-	// Convert string to UUID
-	parsedDeviceID, err := uuid.Parse(deviceID)
-	if err != nil {
-		config.GinBadRequest(c, "Invalid Device ID format", err)
-		return
-	}
-
-	data, err := h.deviceService.GetDevice(c, &parsedDeviceID)
+	data, err := h.deviceService.GetDevice(c, deviceID)
 	if err != nil {
 		config.GinInternalServerError(c, "Failed to get device", err)
 		return
@@ -107,19 +99,13 @@ func (h *deviceHandler) GetDevice(c *gin.Context) {
 }
 
 func (h *deviceHandler) ReceiveLocationData(c *gin.Context) {
-	var deviceID uuid.UUID
-	if err := c.ShouldBindJSON(&deviceID); err != nil {
+	var payload domain.Device
+	if err := c.ShouldBindJSON(&payload); err != nil {
 		config.GinBadRequest(c, "Invalid input", err)
 		return
 	}
 
-	var location domain.Location
-	if err := c.ShouldBindJSON(&location); err != nil {
-		config.GinBadRequest(c, "Invalid input", err)
-		return
-	}
-
-	if err := h.deviceService.ReceiveLocationData(c, &deviceID, &location); err != nil {
+	if err := h.deviceService.ReceiveLocationData(c, &payload); err != nil {
 		config.GinInternalServerError(c, "Failed to receive location data", err)
 		return
 	}

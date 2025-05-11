@@ -3,8 +3,6 @@ package services
 import (
 	"MilTrace/domain"
 	"context"
-
-	"github.com/google/uuid"
 )
 
 type deviceServiceHandler struct {
@@ -35,8 +33,8 @@ func (s *deviceServiceHandler) UpdateDevice(ctx context.Context, deviceData *dom
 	return nil
 }
 
-func (s *deviceServiceHandler) DeleteDevice(ctx context.Context, deviceUUID *uuid.UUID) error {
-	err := s.repo.DeleteDevice(ctx, deviceUUID)
+func (s *deviceServiceHandler) DeleteDevice(ctx context.Context, deviceID string) error {
+	err := s.repo.DeleteDevice(ctx, deviceID)
 	if err != nil {
 		return err
 	}
@@ -53,8 +51,8 @@ func (s *deviceServiceHandler) GetAllDeviceData(ctx context.Context) (*[]domain.
 	return devices, nil
 }
 
-func (s *deviceServiceHandler) GetDevice(ctx context.Context, deviceUUID *uuid.UUID) (*domain.Device, error) {
-	device, err := s.repo.GetDevice(ctx, deviceUUID)
+func (s *deviceServiceHandler) GetDevice(ctx context.Context, deviceID string) (*domain.Device, error) {
+	device, err := s.repo.GetDevice(ctx, deviceID)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +60,8 @@ func (s *deviceServiceHandler) GetDevice(ctx context.Context, deviceUUID *uuid.U
 	return device, nil
 }
 
-func (s *deviceServiceHandler) ReceiveLocationData(ctx context.Context, deviceUUID *uuid.UUID, locationData *domain.Location) error {
-	err := s.repo.ReceiveLocationData(ctx, deviceUUID, locationData)
+func (s *deviceServiceHandler) ReceiveLocationData(ctx context.Context, payload *domain.Device) error {
+	err := s.repo.ReceiveLocationData(ctx, payload)
 	if err != nil {
 		return err
 	}

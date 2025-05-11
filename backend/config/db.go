@@ -19,15 +19,25 @@ func GetDatabaseURL() string {
 
 func BootDB() (*gorm.DB, error) {
 	url := GetDatabaseURL()
-	var err error
-
-	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true, // Temporarily disable FK constraints
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
-	db.AutoMigrate(&domain.Device{}, &domain.Location{}, &domain.User{})
+	// Enable UUID extension
+	if err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`).Error; err != nil {
+		return nil, fmt.Errorf("failed to create uuid extension: %w", err)
+	}
+
+	// Migrate tables in correct order without FK constraints
+	migrationOrder := []interface{}{&domain.Device{}}
+	for _, model := range migrationOrder {
+		if err := db.AutoMigrate(model); err != nil {
+			return nil, fmt.Errorf("failed to migrate %T: %w", model, err)
+		}
+	}
 
 	log.Println("Database Initialized ✅")
 	return db, nil
