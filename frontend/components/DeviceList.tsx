@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Device } from '../types/device';
-import { fetchAllDevices, deleteDevice } from '../api/deviceService';
-import { formatDistanceToNow } from 'date-fns';
+import { DeviceService } from '../api/deviceService'; // Correct import
 import StatusIndicator from './StatusIndicator';
 import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns'; // Missing import
 
 const DeviceList: React.FC = () => {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -14,12 +14,13 @@ const DeviceList: React.FC = () => {
   useEffect(() => {
     const loadDevices = async () => {
       try {
-        const data = await fetchAllDevices();
+        const data = await DeviceService.getAllDevices(); // Correct function call
         setDevices(data);
         setLoading(false);
       } catch (err) {
         setError('Failed to load devices');
         setLoading(false);
+        console.error(err);
       }
     };
     
@@ -32,10 +33,11 @@ const DeviceList: React.FC = () => {
   const handleDelete = async (deviceId: string) => {
     if (window.confirm(`Are you sure you want to delete device ${deviceId}?`)) {
       try {
-        await deleteDevice(deviceId);
+        await DeviceService.deleteDevice(deviceId); // Correct function call
         setDevices(devices.filter(d => d.device_id !== deviceId));
       } catch (err) {
         setError('Failed to delete device');
+        console.error(err);
       }
     }
   };
@@ -67,7 +69,7 @@ const DeviceList: React.FC = () => {
                 </button>
               </td>
               <td className="py-3 px-4">
-                {device.latitude.toFixed(6)}, {device.longitude.toFixed(6)}
+                {device.latitude?.toFixed(6)}, {device.longitude?.toFixed(6)}
               </td>
               <td className="py-3 px-4">
                 {formatDistanceToNow(new Date(device.updated_at))} ago
