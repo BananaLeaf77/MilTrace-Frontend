@@ -6,10 +6,19 @@ import (
 )
 
 type Device struct {
-	DeviceID  string     `gorm:"size:100;not null" json:"device_id"`
-	Latitude  float64    `gorm:"type:float;not null" json:"latitude"`
-	Longitude float64    `gorm:"type:float;not null" json:"longitude"`
-	UpdatedAt *time.Time `gorm:"type:timestamp;not null" json:"updated_at"`
+	DeviceID  string     `gorm:"primaryKey;size:100" json:"device_id"`
+	Latitude  float64    `gorm:"type:float" json:"latitude"`                     // Current position
+	Longitude float64    `gorm:"type:float" json:"longitude"`                    // Current position
+	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`               // Last update time
+	Locations []Location `gorm:"foreignKey:DeviceID" json:"locations,omitempty"` // History
+}
+
+type Location struct {
+	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	DeviceID  string    `gorm:"size:100;index" json:"device_id"` // FK to Device
+	Latitude  float64   `gorm:"type:float" json:"latitude"`
+	Longitude float64   `gorm:"type:float" json:"longitude"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"` // Record time
 }
 
 type DeviceRepository interface {

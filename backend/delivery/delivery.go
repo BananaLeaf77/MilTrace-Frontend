@@ -24,7 +24,7 @@ func NewDeviceHandler(router *gin.Engine, deviceService domain.DeviceService) {
 	router.DELETE("/device/delete/:deviceid", deviceHandler.DeleteDevice)
 	router.GET("/device/all", deviceHandler.GetAllDeviceData)
 	router.GET("/device/get/:deviceid", deviceHandler.GetDevice)
-	router.PUT("/device/receiveLocation", deviceHandler.ReceiveLocationData)
+	router.POST("/device/receiveLocation", deviceHandler.ReceiveLocationData)
 }
 
 func (h *deviceHandler) RegisterNewDevice(c *gin.Context) {

@@ -45,7 +45,7 @@ func StartHTTP() {
 
 	engine.SetTrustedProxies(nil)
 	delivery.NewDeviceHandler(engine, tracerService)
-	log.Println("Starting HTTP server on :8080 🌐")
+	log.Println("Starting HTTP server on :8080` 🌐")
 	log.Println("Endpoint Server Check: http://localhost:8080/ping")
 	if err := engine.Run(":8080"); err != nil {
 		log.Fatalf("Failed to start HTTP server ⛔, err: %s", err)

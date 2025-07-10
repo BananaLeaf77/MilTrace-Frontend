@@ -22,6 +22,9 @@ func NewDeviceRepository(db *gorm.DB) domain.DeviceRepository {
 
 func (r *deviceRepository) RegisterNewDevice(ctx context.Context, device *domain.Device) error {
 	var deviceCount int64
+	device.Longitude = 0 // Default value for Longitude
+	device.Latitude = 0  // Default value for Latitude
+	device.UpdatedAt = time.Now()
 
 	if device.DeviceID == "" {
 		return errors.New("device ID cannot be empty")
@@ -75,6 +78,7 @@ func (r *deviceRepository) DeleteDevice(ctx context.Context, deviceID string) er
 func (r *deviceRepository) GetAllDeviceData(ctx context.Context) (*[]domain.Device, error) {
 	var devices []domain.Device
 	err := r.db.WithContext(ctx).
+		Preload("Locations").
 		Find(&devices).
 		Error
 
@@ -86,7 +90,7 @@ func (r *deviceRepository) GetAllDeviceData(ctx context.Context) (*[]domain.Devi
 
 func (r *deviceRepository) GetDevice(ctx context.Context, deviceID string) (*domain.Device, error) {
 	var device domain.Device
-	if err := r.db.WithContext(ctx).Where("device_id = ?", deviceID).First(&device).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.Device{}).Preload("Locations").Where("device_id = ?", deviceID).First(&device).Error; err != nil {
 		return nil, err
 	}
 	return &device, nil
@@ -108,11 +112,24 @@ func (r *deviceRepository) ReceiveLocationData(ctx context.Context, payload *dom
 		return errors.New("latitude and longitude cannot be zero")
 	}
 
-	payload.UpdatedAt = &tNow
+	err = r.db.WithContext(ctx).Model(&domain.Device{}).Where("device_id = ?", payload.DeviceID).Updates(&domain.Device{
+		Latitude: payload.Latitude, Longitude: payload.Longitude, UpdatedAt: tNow}).Error
 
-	// Update the device location data
-	if err := r.db.WithContext(ctx).Model(&domain.Device{}).Where("device_id = ?", payload.DeviceID).Updates(payload).Error; err != nil {
-		return fmt.Errorf("failed to update device location data: %w", err)
+	if err != nil {
+		return fmt.Errorf("failed to update device location: %w", err)
 	}
+
+	// save the location to location table
+	location := &domain.Location{
+		DeviceID:  payload.DeviceID,
+		Latitude:  payload.Latitude,
+		Longitude: payload.Longitude,
+		CreatedAt: tNow,
+	}
+
+	if err = r.db.WithContext(ctx).Create(location).Error; err != nil {
+		return fmt.Errorf("failed to save location data: %w", err)
+	}
+
 	return nil
 }
