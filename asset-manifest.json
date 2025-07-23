@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/MilTrace-Frontend/static/css/main.323d7611.css",
+    "main.js": "/MilTrace-Frontend/static/js/main.db9c2039.js",
+    "static/js/453.6a25b995.chunk.js": "/MilTrace-Frontend/static/js/453.6a25b995.chunk.js",
+    "index.html": "/MilTrace-Frontend/index.html",
+    "main.323d7611.css.map": "/MilTrace-Frontend/static/css/main.323d7611.css.map",
+    "main.db9c2039.js.map": "/MilTrace-Frontend/static/js/main.db9c2039.js.map",
+    "453.6a25b995.chunk.js.map": "/MilTrace-Frontend/static/js/453.6a25b995.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.323d7611.css",
+    "static/js/main.db9c2039.js"
+  ]
+}
