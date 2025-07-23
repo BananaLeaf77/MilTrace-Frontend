@@ -33,7 +33,7 @@ const DeviceTracker = ({ deviceId = "esp32-001" }) => {
   // Fetch device data from API
   const fetchDeviceData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/device/get/${deviceId}`);
+      const response = await fetch(`http://miltrace-backend-production.up.railway.app/device/get/${deviceId}`);
       const data = await response.json();
       if (data.success) {
         setDeviceData(data.data);
